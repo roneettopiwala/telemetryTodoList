@@ -1,12 +1,13 @@
 import { Elysia } from "elysia";
 import {todoRoute} from "./routes/todoRoutes";
-import { metricMiddleware, healthCheck } from "./telemetry/todotelemetry";
+import { metricMiddleware, healthCheck, trackUserData } from "./telemetry/todotelemetry";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 const app = new Elysia()
   .use(opentelemetry())
   .use(metricMiddleware)
   .use(todoRoute)
   .get("/health", healthCheck)
+  .get("/useranalytics", trackUserData)
   .listen(3000);
 
 console.log(

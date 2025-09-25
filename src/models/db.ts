@@ -1,6 +1,12 @@
-import { drizzle } from "drizzle-orm/bun-sqlite";
-import { Database } from "bun:sqlite";
+
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
 import * as schema from "./schema";
 
-const sqlite = new Database("sqlite.db");
-export const db = drizzle(sqlite, { schema });
+// Create Turso client
+const client = createClient({
+  url: process.env.TURSO_DATABASE_URL || "file:local.db", // Fallback for local dev
+  authToken: process.env.TURSO_TOKEN,
+});
+
+export const db = drizzle(client, { schema });

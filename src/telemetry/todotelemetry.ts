@@ -2,12 +2,38 @@ import { Elysia } from "elysia"
 import { opentelemetry } from "@elysiajs/opentelemetry"
 import {trace, metrics} from "@opentelemetry/api"
 import {db} from "../models/db"  
-
+import { timestamp } from "drizzle-orm/gel-core"
 const meter = metrics.getMeter('todo-api', '1.0.0')
+
+
+
 //RED metrics
 const httpRequests = meter.createCounter('requests_total')
 const httpErrors = meter.createCounter('errorsTotal')
 const httpDuration = meter.createHistogram('requestDurations')
+
+//user telemetry metrics
+
+const todoCreated = meter.createCounter('todosCreateTotal', {
+    description: "Total number of todos created"
+})
+const todoCompleted = meter.createCounter('todosCompleted', {
+    description: "# of todos created"
+})
+
+const todoDeleted = meter.createCounter('todosDeleted', {
+    description: 'Total number of todos deleted'
+})
+
+const todoViewed = meter.createCounter('todosViewed', {
+    description: 'Total number of todos viewed'
+})
+
+//user session tracking
+let activeSession = new Set()
+const activeUsers = meter.createUpDownCounter('activeUser', {
+    description: 'Number of currently active user'
+})
 let totalRequests= 0
 let startTime = Date.now()
 export const metricMiddleware = (app: Elysia) => {
@@ -86,4 +112,50 @@ export const healthCheck = async () => { // async means function is waiitng for 
         };
     }
 };
+
+
+let countTodoCreated = 0
+let countTodoCompleted = 0
+let countTodoViewed = 0
+let countTodoDeleted = 0
+
+// Simple user tracking functions
+export const trackTodoCreated = () => {
+    todoCreated.add(1)
+    countTodoCreated++
+    console.log('USER EVENT: Todo created');
+}
+
+export const trackTodoCompleted = () => {
+    todoCompleted.add(1)
+    countTodoCompleted++
+    console.log('USER EVENT: Todo completed');
+}
+
+export const trackTodoDeleted = () => {
+    countTodoDeleted++
+    todoDeleted.add(1)
+    console.log('USER EVENT: Todo deleted');
+}
+
+export const trackTodoViewed = () => {
+    countTodoViewed++
+    todoViewed.add(1)
+    console.log('USER EVENT: Todo list viewed');
+}
+
+
+export const trackUserData = () => {
+    return{
+        userEvents: {
+            todoCreated: countTodoCreated,
+            todoCompleted: countTodoCompleted,
+            todoDeleted: countTodoDeleted,
+            todoViewed: countTodoViewed
+        },
+        timestamp: new Date().toISOString()
+    }
+}
+
+
 
