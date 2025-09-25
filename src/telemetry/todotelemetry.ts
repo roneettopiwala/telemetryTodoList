@@ -2,7 +2,6 @@ import { Elysia } from "elysia"
 import { opentelemetry } from "@elysiajs/opentelemetry"
 import {trace, metrics} from "@opentelemetry/api"
 import {db} from "../models/db"  
-import { timestamp } from "drizzle-orm/gel-core"
 const meter = metrics.getMeter('todo-api', '1.0.0')
 
 
