@@ -4,10 +4,12 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "build:tsc": "tsc",
+    "start": "bun run src/index.ts",
+    "start:node": "node dist/index.js",
     "dev": "bun run --watch src/index.ts",
-    "vercel-build": "npm run build",
+    "vercel-build": "bun run build:tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "drizzle-kit generate --config=drizzle/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle/drizzle.config.ts",
@@ -30,6 +32,7 @@
     "bun-types": "latest",
     "drizzle-kit": "^0.31.4"
   },
+  "trustedDependencies": ["elysia"],
   "engines": {
     "node": ">=18.0.0"
   }
