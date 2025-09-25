@@ -157,5 +157,17 @@ export const trackUserData = () => {
     }
 }
 
+export const performanceMetrics = () =>{
+    const uptimeSecs = (Date.now() - startTime) / 1000;
+    const requestRate = totalRequests / uptimeSecs;
+    return {
+    system:{
+        uptime: uptimeSecs,
+        totalRequests,
+        requestRate: parseFloat(requestRate.toFixed(2)),
+        timestamp: new Date().toISOString()
+    },
 
+}
+}
 
